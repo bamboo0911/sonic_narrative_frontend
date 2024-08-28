@@ -1,0 +1,100 @@
+/* App.css */
+
+/* 基本設定 */
+body {
+  font-family: 'Lora', serif; /* 使用具有鄉愁感的字體 */
+  background-color: #f7f3eb;  /* 柔和的紙張色背景 */
+  color: #4a4a4a; /* 柔和的深灰色字體顏色 */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-align: center; /* 文字水平置中 */
+}
+
+/* 統一的容器 */
+.container {
+  max-width: 800px;
+  margin: 0 auto; /* 確保內容在較寬的螢幕上居中 */
+  padding: 20px;
+}
+
+/* 統一的標題 */
+h1, h2 {
+  font-family: 'Playfair Display', serif; /* 優雅的標題字體 */
+  color: #3e3e3e;
+  margin-bottom: 20px;
+  line-height: 1.4; /* 增加標題的行高，提升可讀性 */
+}
+
+/* 統一的段落和文本框樣式 */
+p, textarea, input[type="text"] {
+  font-family: 'Lora', serif;
+  color: #4a4a4a;
+  line-height: 1.6; /* 增加段落的行高，提升可讀性 */
+  width: 100%; /* 確保輸入框能自適應容器寬度 */
+  max-width: 600px;
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: #fdfdfb; /* 柔和的米色背景 */
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  resize: vertical; /* 允許垂直方向調整大小 */
+  text-align: left; /* 確保文本框內文字左對齊 */
+}
+
+/* 統一的按鈕樣式 */
+button {
+  padding: 10px 20px;
+  background-color: #8a7e72; /* 柔和的棕色 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  margin: 10px; /* 增加按鈕間距 */
+}
+
+button:hover {
+  background-color: #6e6459; /* 按鈕懸停時的顏色 */
+}
+
+/* 按鈕容器，用於居中排列 */
+.button-container {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  flex-wrap: wrap; /* 如果按鈕數量多於一行，允許換行 */
+}
+
+/* 顯示區域 */
+.submitted-container {
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto; /* 水平居中 */
+  text-align: left;
+  word-wrap: break-word;
+}
+
+/* 返回主頁按鈕 */
+.back-button {
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  margin-top: 20px;
+}
+
+.back-button:hover {
+  background-color: #5a6268;
+}
