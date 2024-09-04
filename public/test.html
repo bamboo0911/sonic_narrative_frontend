@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poem and Audio Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #555;
+        }
+        textarea, input[type="file"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+        #poemResult {
+            background-color: #fff;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+        audio {
+            margin-top: 20px;
+            width: 100%;
+        }
+        #speedValue {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Poem and Audio Generator</h1>
+
+    <h2>Step 1: Generate Poem</h2>
+    <textarea id="textInput" placeholder="Enter some text here..." rows="4" cols="50"></textarea><br>
+    <input type="file" id="imageInput" accept="image/*"><br>
+    <button id="generatePoemBtn" onclick="generatePoem()">Generate Poem</button><br>
+    <div id="poemResult"></div>
+
+    <h2>Step 2: Generate Audio</h2>
+    <label for="voiceSelect">Choose a voice:</label>
+    <select id="voiceSelect">
+        <option value="alloy">Alloy</option>
+        <option value="echo">Echo</option>
+        <option value="fable">Fable</option>
+        <option value="onyx">Onyx</option>
+        <option value="nova">Nova</option>
+        <option value="shimmer">Shimmer</option>
+    </select><br>
+
+    <label for="speedInput">Select speed (0.5 to 2.0): <span id="speedValue">1.0</span></label>
+    <input type="range" id="speedInput" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeedValue()"><br>
+
+    <button id="generateAudioBtn" onclick="generateAudio()" disabled>Generate Audio from Poem</button><br>
+    <audio id="audioPlayer" controls></audio>
+
+    <script>
+        function updateSpeedValue() {
+            const speed = document.getElementById('speedInput').value;
+            document.getElementById('speedValue').innerText = speed;
+        }
+
+        async function generatePoem() {
+            const text = document.getElementById('textInput').value;
+            const imageFile = document.getElementById('imageInput').files[0];
+
+            if (!text || !imageFile) {
+                alert('Please enter text and select an image.');
+                return;
+            }
+
+            document.getElementById('generatePoemBtn').disabled = true;
+
+            const reader = new FileReader();
+            reader.onloadend = async function() {
+                const photoBase64 = reader.result.split(',')[1]; // Get Base64 without prefix
+                try {
+                    const response = await fetch('http://localhost:8080/api/generate-poem', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ text, photo: photoBase64 })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        document.getElementById('poemResult').innerText = result.generatedText;
+                        document.getElementById('generateAudioBtn').disabled = false;
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    alert('An error occurred: ' + error.message);
+                } finally {
+                    document.getElementById('generatePoemBtn').disabled = false;
+                }
+            };
+            reader.readAsDataURL(imageFile);
+        }
+
+        async function generateAudio() {
+            const text = document.getElementById('poemResult').innerText;
+            const voice = document.getElementById('voiceSelect').value;
+            const speed = parseFloat(document.getElementById('speedInput').value);
+
+            if (!text) {
+                alert('Please generate a poem first.');
+                return;
+            }
+
+            document.getElementById('generateAudioBtn').disabled = true;
+
+            try {
+                const response = await fetch('http://localhost:8080/api/generate-audio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text, voice, speed })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    audioPlayer.src = 'data:audio/mp3;base64,' + result.audioContent;
+                    audioPlayer.play();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('An error occurred: ' + error.message);
+            } finally {
+                document.getElementById('generateAudioBtn').disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

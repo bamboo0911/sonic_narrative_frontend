@@ -1,22 +1,45 @@
 import React, { useState } from 'react';
-import '../App.css';  // 确保引入了App.css
+import { useNavigate } from 'react-router-dom';
+import Compressor from 'compressorjs';
+import '../App.css';
 
 const PhotoPage = () => {
-  const [photo, setPhoto] = useState(null); // 用来存储已上传或拍摄的照片
+  const [photo, setPhoto] = useState(null);
+  const navigate = useNavigate();
 
   const handlePhotoUpload = (event) => {
-    const file = event.target.files[0]; // 获取选中的文件（照片）
+    const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader(); // 创建FileReader对象来读取文件
-      reader.onloadend = () => {
-        setPhoto(reader.result); // 将读取的照片（Base64 URL）设置为photo状态
-      };
-      reader.readAsDataURL(file); // 读取文件内容并转换为Data URL
+      new Compressor(file, {
+        quality: 0.6, // 壓縮質量調整為 0.6
+        success(result) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const photoData = reader.result;
+            setPhoto(photoData);
+            try {
+              localStorage.setItem('photoData', photoData);
+            } catch (error) {
+              console.error('Error setting item in localStorage:', error);
+            }
+          };
+          reader.readAsDataURL(result);
+        },
+        error(err) {
+          console.error('Compression failed:', err.message);
+        },
+      });
     }
   };
 
   const handleChooseAnotherPhoto = () => {
-    setPhoto(null); // 清空photo状态，允许重新选择照片
+    setPhoto(null);
+    localStorage.removeItem('photoData');
+  };
+
+  const handleSendPhoto = () => {
+    localStorage.setItem('hasPhoto', 'true');
+    navigate('/');
   };
 
   return (
@@ -50,7 +73,7 @@ const PhotoPage = () => {
 
       {photo && (
         <div style={{ marginTop: '20px' }}>
-          <button>Send</button> {/* SEND按钮，功能尚未实现 */}
+          <button onClick={handleSendPhoto}>Send</button>
         </div>
       )}
 
